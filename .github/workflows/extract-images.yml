@@ -1,0 +1,60 @@
+name: Replace embedded images
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  replace-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Replace Base64 images
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p = Path("index.html")
+          text = p.read_text(encoding="utf-8")
+
+          pattern = re.compile(r'<img(\s+[^>]*?)?src=["\']data:image/[^;]+;base64,[^"\']+["\']([^>]*?)>', re.I | re.S)
+          matches = list(pattern.finditer(text))
+
+          replacements = ["images/hero.jpg", "images/diska.jpg"]
+          if not matches:
+              print("No embedded Base64 images found; nothing to do.")
+              raise SystemExit(0)
+
+          if len(matches) < 2:
+              raise SystemExit(f"Expected 2 embedded images, found {len(matches)}")
+
+          out = []
+          last = 0
+          for i, m in enumerate(matches):
+              src = replacements[i] if i < len(replacements) else replacements[-1]
+              tag = m.group(0)
+              tag = re.sub(r'src=["\']data:image/[^;]+;base64,[^"\']+["\']', f'src="{src}"', tag, count=1, flags=re.I | re.S)
+              out.append(text[last:m.start()])
+              out.append(tag)
+              last = m.end()
+          out.append(text[last:])
+          p.write_text("".join(out), encoding="utf-8")
+          print(f"Replaced {len(matches)} embedded image(s).")
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git add index.html
+          git commit -m "Replace Base64 images with external files"
+          git push
