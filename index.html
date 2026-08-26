@@ -142,6 +142,17 @@
   .diff .desc{ font-size:.82rem; color:var(--muted); }
   .diff.insane{ border-color:var(--danger); background:linear-gradient(180deg, rgba(138,59,46,.15), transparent); }
 
+  .requirements{
+    display:grid; grid-template-columns:1fr 1fr; gap:20px;
+  }
+  .requirements .card{ height:100%; }
+  .requirements-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .requirements-list li{ display:flex; justify-content:space-between; gap:20px; padding:10px 0; border-bottom:1px solid var(--line); font-size:.92rem; }
+  .requirements-list li:last-child{ border-bottom:0; }
+  .requirements-list span{ color:var(--muted); }
+  .requirements-list b{ color:var(--paper); font-weight:600; text-align:right; }
+  .requirements-note{ margin-top:20px; padding:14px 16px; border-left:2px solid var(--ember); color:#cfc7bd; font-size:.9rem; background:rgba(201,111,62,.06); border-radius:0 10px 10px 0; }
+
   .status-box{
     display:flex; align-items:center; gap:16px; background:var(--bg-soft);
     border:1px solid var(--line); border-radius:18px; padding:22px 26px;
@@ -164,10 +175,13 @@
     .hero{ grid-template-columns:1fr; }
     .antagonist{ grid-template-columns:1fr; }
     .grid{ grid-template-columns:1fr 1fr; }
+    .requirements{ grid-template-columns:1fr; }
     .torch-card{ order:-1; }
   }
   @media (max-width:560px){
     .grid{ grid-template-columns:1fr; }
+    .requirements-list li{ flex-direction:column; gap:3px; }
+    .requirements-list b{ text-align:left; }
     nav{ display:none; }
   }
 
@@ -186,6 +200,7 @@
     <a href="#antagonist">Диська</a>
     <a href="#features">Механики</a>
     <a href="#difficulty">Сложность</a>
+    <a href="#requirements">Требования</a>
     <a href="#status">Статус</a>
   </nav>
 </header>
@@ -260,6 +275,52 @@
     <div class="diff"><div class="name">Сложная</div><div class="desc">Диська быстрее тебя</div></div>
     <div class="diff"><div class="name">Экстрим</div><div class="desc">Диська намного быстрее</div></div>
     <div class="diff insane"><div class="name">Безумие</div><div class="desc">×1.7 против ×0.9. Удачи.</div></div>
+  </div>
+</section>
+
+<section id="requirements">
+  <div class="section-head">
+    <div class="eyebrow">Системные требования</div>
+    <h2>Что нужно, чтобы открыть дверь.</h2>
+    <p>Игра рассчитана на Android-устройства с Vulkan. Для основной игры интернет не нужен.</p>
+  </div>
+
+  <div class="requirements">
+    <div class="card">
+      <span class="num mono">MINIMUM</span>
+      <h3>Минимальные</h3>
+      <ul class="requirements-list">
+        <li><span>Android</span><b>7.0+ · API 24</b></li>
+        <li><span>ОЗУ</span><b>3 ГБ+</b></li>
+        <li><span>Свободное место</span><b>150 МБ+</b></li>
+        <li><span>Архитектура</span><b>ARMv7 / ARM64</b></li>
+        <li><span>Графика</span><b>Vulkan</b></li>
+        <li><span>Экран</span><b>Альбомный</b></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <span class="num mono">RECOMMENDED</span>
+      <h3>Рекомендуемые</h3>
+      <ul class="requirements-list">
+        <li><span>Android</span><b>8.0+</b></li>
+        <li><span>ОЗУ</span><b>4 ГБ+</b></li>
+        <li><span>Свободное место</span><b>200 МБ+</b></li>
+        <li><span>Архитектура</span><b>ARM64</b></li>
+        <li><span>Графика</span><b>Vulkan</b></li>
+        <li><span>Экран</span><b>Альбомный</b></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <span class="num mono">APK / NETWORK</span>
+    <ul class="requirements-list">
+      <li><span>APK</span><b>≈65,5 МБ · ARMv7 + ARM64</b></li>
+      <li><span>Интернет</span><b>Только рейтинг и лидерборд</b></li>
+      <li><span>Основная игра</span><b>Работает без интернета</b></li>
+    </ul>
+    <div class="requirements-note">Требования указаны как ориентир: производительность может отличаться в зависимости от конкретного устройства и его графического процессора.</div>
   </div>
 </section>
 
