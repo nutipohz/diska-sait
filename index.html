@@ -11,7 +11,7 @@
 <main id="site"></main>
 <noscript>Для просмотра сайта необходимо включить JavaScript.</noscript>
 <script>
-const sections=['header','hero','antagonist','features','difficulty','ranks','controls','requirements','gallery','credits','status','footer','lightbox'];
+const sections=['header','hero','news','next','antagonist','features','difficulty','ranks','controls','requirements','gallery','credits','status','footer','lightbox'];
 const site=document.getElementById('site');
 Promise.all(sections.map(name=>fetch('sections/'+name+'.html').then(r=>{if(!r.ok)throw new Error(name);return r.text()})))
 .then(parts=>{site.innerHTML=parts.join('\n');const s=document.createElement('script');s.src='js/main.js';document.body.appendChild(s)})
