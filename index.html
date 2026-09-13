@@ -16,7 +16,7 @@
 <meta property="og:url" content="https://nutipohz.github.io/diska-sait/">
 <meta property="og:site_name" content="Побег из дома — Диська">
 <link rel="icon" type="image/png" href="images/favicon-main.png">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=1.1.1">
 </head>
 <body>
 <div class="grain"></div>
@@ -25,7 +25,7 @@
 <script>
 const sections=['header','hero','news','next','antagonist','features','difficulty','ranks','controls','requirements','gallery','credits','status','footer','lightbox'];
 const site=document.getElementById('site');
-const version='1.1';
+const version='1.1.1';
 Promise.all(sections.map(name=>fetch('sections/'+name+'.html?v='+version,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(name);return r.text()})))
 .then(parts=>{site.innerHTML=parts.join('\n');const s=document.createElement('script');s.src='js/main.js?v='+version;document.body.appendChild(s)})
 .catch(err=>{console.error(err);site.innerHTML='<section class="section"><div class="status-box"><strong>Не удалось загрузить страницу.</strong><br><span style="color:var(--muted)">Попробуйте обновить страницу.</span></div></section>'});
