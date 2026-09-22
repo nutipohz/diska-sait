@@ -18,3 +18,57 @@ if(viewport&&lb&&lbi)viewport.onclick=()=>{lbi.src=imgs[gi];lb.classList.add('op
 const close=document.getElementById('lightboxClose');if(close&&lb)close.onclick=()=>lb.classList.remove('open');
 if(lb)lb.onclick=e=>{if(e.target===lb)lb.classList.remove('open')};
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')showGallery(gi-1);if(e.key==='ArrowRight')showGallery(gi+1);if(e.key==='Escape'&&lb)lb.classList.remove('open')});
+
+const bugForm=document.getElementById('bugReportForm');
+if(bugForm){
+  const bugDevice=document.getElementById('bugDevice');
+  const bugAndroid=document.getElementById('bugAndroid');
+  const bugStatus=document.getElementById('bugStatus');
+  const bugSubmit=document.getElementById('bugSubmit');
+
+  const ua=navigator.userAgent||'';
+  if(bugAndroid && !bugAndroid.value){
+    const match=ua.match(/Android\s([0-9.]+)/i);
+    if(match)bugAndroid.value='Android '+match[1];
+  }
+  if(bugDevice && !bugDevice.value && /Android/i.test(ua)){
+    const match=ua.match(/Android[^;]*;\s*(?:[a-z]{2}-[a-z]{2};\s*)?([^;)]+?)(?:\s+Build\/[^;)]+)?[;)]/i);
+    if(match && match[1])bugDevice.value=match[1].trim();
+  }
+
+  bugForm.addEventListener('submit',async e=>{
+    e.preventDefault();
+    bugStatus.textContent='Отправка...';
+    bugStatus.className='bug-status';
+    bugSubmit.disabled=true;
+
+    const payload={
+      device:bugDevice.value.trim(),
+      android:bugAndroid.value.trim(),
+      description:document.getElementById('bugDescription').value.trim(),
+      steps:document.getElementById('bugSteps').value.trim()
+    };
+
+    try{
+      const response=await fetch('https://lingering-hall-fe0d.p08071774.workers.dev',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+      });
+      if(!response.ok)throw new Error('HTTP '+response.status);
+      bugStatus.textContent='Баг-репорт отправлен!';
+      bugStatus.className='bug-status success';
+      bugForm.reset();
+      if(bugAndroid){
+        const match=ua.match(/Android\s([0-9.]+)/i);
+        if(match)bugAndroid.value='Android '+match[1];
+      }
+    }catch(err){
+      console.error(err);
+      bugStatus.textContent='Не удалось отправить. Попробуйте ещё раз.';
+      bugStatus.className='bug-status error';
+    }finally{
+      bugSubmit.disabled=false;
+    }
+  });
+}
