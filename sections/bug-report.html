@@ -1,0 +1,36 @@
+<section class="section" id="bug-report">
+  <div class="section-head">
+    <div class="eyebrow">BUG REPORT</div>
+    <h2>Сообщить об ошибке</h2>
+    <p>Нашли баг? Опишите его — сообщение будет отправлено разработчику.</p>
+  </div>
+
+  <form class="bug-form" id="bugReportForm">
+    <div class="bug-form-grid">
+      <label class="bug-field">
+        <span>📱 Устройство</span>
+        <input id="bugDevice" name="device" type="text" placeholder="Например: Samsung Galaxy A52" required>
+      </label>
+
+      <label class="bug-field">
+        <span>🤖 Android</span>
+        <input id="bugAndroid" name="android" type="text" placeholder="Например: Android 13" required>
+      </label>
+    </div>
+
+    <label class="bug-field">
+      <span>🐛 Что произошло?</span>
+      <textarea id="bugDescription" name="description" rows="5" placeholder="Опишите ошибку как можно понятнее" required></textarea>
+    </label>
+
+    <label class="bug-field">
+      <span>🔁 Как повторить?</span>
+      <textarea id="bugSteps" name="steps" rows="4" placeholder="Например: 1. Открыл игру 2. Нажал ..."></textarea>
+    </label>
+
+    <div class="bug-actions">
+      <button class="btn btn-primary" type="submit" id="bugSubmit">🐛 Отправить баг-репорт</button>
+      <span class="bug-status" id="bugStatus" aria-live="polite"></span>
+    </div>
+  </form>
+</section>
