@@ -9,14 +9,23 @@
     <div class="bug-form-grid">
       <label class="bug-field">
         <span>📱 Устройство</span>
-        <input id="bugDevice" name="device" type="text" placeholder="Например: Samsung Galaxy A52" required>
+        <input id="bugDevice" name="device" type="search" list="androidDeviceList" placeholder="Начните вводить модель телефона" autocomplete="off" required>
+        <datalist id="androidDeviceList"></datalist>
+        <small class="bug-hint" id="bugDeviceHint">Загрузка базы Android-устройств…</small>
       </label>
 
       <label class="bug-field">
         <span>🤖 Android</span>
-        <input id="bugAndroid" name="android" type="text" placeholder="Например: Android 13" required>
-      </label>
-    </div>
+        <select id="bugAndroid" name="android" required>
+          <option value="">Выберите версию</option>
+          <option>Android 7.0</option><option>Android 7.1</option>
+          <option>Android 8.0</option><option>Android 8.1</option>
+          <option>Android 9</option><option>Android 10</option><option>Android 11</option>
+          <option>Android 12</option><option>Android 12L</option><option>Android 13</option>
+          <option>Android 14</option><option>Android 15</option><option>Android 16</option><option>Android 17</option>
+        </select>
+        <small class="bug-hint">Только Android 7.0+ — минимальное требование игры.</small>
+      </label>    </div>
 
     <label class="bug-field">
       <span>🐛 Что произошло?</span>
