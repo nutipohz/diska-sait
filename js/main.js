@@ -27,13 +27,34 @@ if(bugForm){
   const bugSubmit=document.getElementById('bugSubmit');
 
   const ua=navigator.userAgent||'';
+
+  // Автоматически определяем Android и модель устройства из User-Agent.
+  // Пользователю не нужно вручную искать модель телефона.
   if(bugAndroid && !bugAndroid.value){
-    const match=ua.match(/Android\s([0-9.]+)/i);
+    const match=ua.match(/Android\\s+([0-9.]+)/i);
     if(match)bugAndroid.value='Android '+match[1];
   }
+
   if(bugDevice && !bugDevice.value && /Android/i.test(ua)){
-    const match=ua.match(/Android[^;]*;\s*(?:[a-z]{2}-[a-z]{2};\s*)?([^;)]+?)(?:\s+Build\/[^;)]+)?[;)]/i);
-    if(match && match[1])bugDevice.value=match[1].trim();
+    let device='';
+
+    // Большинство Android User-Agent содержит модель между ";" и "Build/".
+    const buildMatch=ua.match(/;\\s*([^;)]+?)\\s+Build\\/[^;)]+/i);
+    if(buildMatch)device=buildMatch[1].trim();
+
+    // Запасной вариант для User-Agent без Build/.
+    if(!device){
+      const androidPart=ua.match(/Android[^;]*;\\s*([^;)]+)/i);
+      if(androidPart)device=androidPart[1].trim();
+    }
+
+    // Убираем служебные пометки, которые иногда встречаются перед моделью.
+    device=device
+      .replace(/^([a-z]{2}[-_][a-z]{2});\\s*/i,'')
+      .replace(/^wv;\\s*/i,'')
+      .trim();
+
+    if(device)bugDevice.value=device;
   }
 
   bugForm.addEventListener('submit',async e=>{
