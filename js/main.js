@@ -26,35 +26,33 @@ if(bugForm){
   const bugStatus=document.getElementById('bugStatus');
   const bugSubmit=document.getElementById('bugSubmit');
 
-  const ua=navigator.userAgent||'';
+  const deviceList=document.getElementById('androidDeviceList');
+  const deviceHint=document.getElementById('bugDeviceHint');
 
-  // Автоматически определяем Android и модель устройства из User-Agent.
-  // Пользователю не нужно вручную искать модель телефона.
-  if(bugAndroid && !bugAndroid.value){
-    const match=ua.match(/Android\\s+([0-9.]+)/i);
-    if(match)bugAndroid.value='Android '+match[1];
-  }
-
-  if(bugDevice && !bugDevice.value && /Android/i.test(ua)){
-    let device='';
-
-    // Большинство Android User-Agent содержит модель между ";" и "Build/".
-    const buildMatch=ua.match(/;\\s*([^;)]+?)\\s+Build\\/[^;)]+/i);
-    if(buildMatch)device=buildMatch[1].trim();
-
-    // Запасной вариант для User-Agent без Build/.
-    if(!device){
-      const androidPart=ua.match(/Android[^;]*;\\s*([^;)]+)/i);
-      if(androidPart)device=androidPart[1].trim();
-    }
-
-    // Убираем служебные пометки, которые иногда встречаются перед моделью.
-    device=device
-      .replace(/^([a-z]{2}[-_][a-z]{2});\\s*/i,'')
-      .replace(/^wv;\\s*/i,'')
-      .trim();
-
-    if(device)bugDevice.value=device;
+  if(deviceList){
+    fetch('https://cdn.jsdelivr.net/gh/pbakondy/android-device-list@master/devices.json')
+      .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})
+      .then(devices=>{
+        const seen=new Set();
+        const fragment=document.createDocumentFragment();
+        devices.forEach(d=>{
+          const name=(d.name||d.model||'').trim();
+          const brand=(d.brand||'').trim();
+          if(!name||!brand)return;
+          const label=brand+' '+name;
+          if(seen.has(label))return;
+          seen.add(label);
+          const option=document.createElement('option');
+          option.value=label;
+          fragment.appendChild(option);
+        });
+        deviceList.appendChild(fragment);
+        if(deviceHint)deviceHint.textContent='Выберите модель из базы Android-устройств или начните вводить название.';
+      })
+      .catch(err=>{
+        console.error('Не удалось загрузить базу Android-устройств:',err);
+        if(deviceHint)deviceHint.textContent='База временно недоступна — модель можно ввести вручную.';
+      });
   }
 
   bugForm.addEventListener('submit',async e=>{
