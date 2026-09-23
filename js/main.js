@@ -26,6 +26,7 @@ if(bugForm){
   const bugStatus=document.getElementById('bugStatus');
   const bugSubmit=document.getElementById('bugSubmit');
 
+  const ua=navigator.userAgent||'';
   const deviceList=document.getElementById('androidDeviceList');
   const deviceHint=document.getElementById('bugDeviceHint');
   const compatibleDevices=new Set();
