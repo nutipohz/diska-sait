@@ -28,30 +28,86 @@ if(bugForm){
 
   const deviceList=document.getElementById('androidDeviceList');
   const deviceHint=document.getElementById('bugDeviceHint');
+  const compatibleDevices=new Set();
 
   if(deviceList){
-    fetch('https://cdn.jsdelivr.net/gh/pbakondy/android-device-list@master/devices.json')
-      .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})
-      .then(devices=>{
-        const seen=new Set();
+    const csvUrl='https://raw.githubusercontent.com/unitycoder/AndroidDeviceList/master/devices.csv';
+
+    const parseCsv=csv=>{
+      const rows=[];
+      let row=[],cell='',quoted=false;
+      for(let i=0;i<csv.length;i++){
+        const ch=csv[i], next=csv[i+1];
+        if(ch==='"'){
+          if(quoted && next==='"'){cell+='"';i++;}
+          else quoted=!quoted;
+        }else if(ch===',' && !quoted){row.push(cell.trim());cell='';}
+        else if((ch==='\n'||ch==='\r') && !quoted){
+          if(ch==='\r'&&next==='\n')i++;
+          row.push(cell.trim());cell='';
+          if(row.some(Boolean))rows.push(row);
+          row=[];
+        }else cell+=ch;
+      }
+      if(cell||row.length){row.push(cell.trim());rows.push(row);}
+      return rows;
+    };
+
+    fetch(csvUrl,{cache:'no-store'})
+      .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text()})
+      .then(csv=>{
+        const rows=parseCsv(csv);
+        const header=rows.shift().map(x=>x.toLowerCase());
+        const idx=name=>header.findIndex(x=>x.includes(name.toLowerCase()));
+        const iManufacturer=idx('manufacturer');
+        const iModel=idx('model name');
+        const iCode=idx('model code');
+        const iRam=idx('ram');
+        const iForm=idx('form factor');
+        const iAbis=idx('abis');
+        const iSdk=idx('android sdk');
+        const iGles=idx('opengl es');
+
         const fragment=document.createDocumentFragment();
-        devices.forEach(d=>{
-          const name=(d.name||d.model||'').trim();
-          const brand=(d.brand||'').trim();
-          if(!name||!brand)return;
-          const label=brand+' '+name;
-          if(seen.has(label))return;
-          seen.add(label);
+        const seen=new Set();
+
+        const nums=text=>(text.match(/\d+(?:\.\d+)?/g)||[]).map(Number);
+
+        rows.forEach(row=>{
+          const manufacturer=(row[iManufacturer]||'').trim();
+          const model=(row[iModel]||'').trim();
+          const code=(row[iCode]||'').trim();
+          const form=(row[iForm]||'').toLowerCase();
+          const ram=nums(row[iRam]||'');
+          const sdk=nums(row[iSdk]||'');
+          const gles=nums(row[iGles]||'');
+          const abis=(row[iAbis]||'').toLowerCase();
+
+          if(!manufacturer||!model)return;
+          if(!form.includes('phone')&&!form.includes('mobile'))return;
+          if(!ram.some(v=>v>=3072))return;
+          if(!sdk.some(v=>v>=24))return;
+          if(!/(armeabi-v7a|arm64-v8a|armeabi)/.test(abis))return;
+          if(!gles.some(v=>v>=3.0))return;
+
+          const label=manufacturer+' '+model;
+          const key=(label+' '+code).toLowerCase();
+          if(seen.has(key))return;
+          seen.add(key);
+          compatibleDevices.add(label.toLowerCase());
+
           const option=document.createElement('option');
           option.value=label;
+          option.label='Android 7.0+ · 3 ГБ+ · OpenGL ES 3.0+';
           fragment.appendChild(option);
         });
-        deviceList.appendChild(fragment);
-        if(deviceHint)deviceHint.textContent='Выберите модель из базы Android-устройств или начните вводить название.';
+
+        deviceList.replaceChildren(fragment);
+        if(deviceHint)deviceHint.textContent='Выберите модель из базы совместимых Android-устройств.';
       })
       .catch(err=>{
         console.error('Не удалось загрузить базу Android-устройств:',err);
-        if(deviceHint)deviceHint.textContent='База временно недоступна — модель можно ввести вручную.';
+        if(deviceHint)deviceHint.textContent='Не удалось загрузить базу устройств. Обновите страницу.';
       });
   }
 
