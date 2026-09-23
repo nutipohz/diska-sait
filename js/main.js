@@ -55,7 +55,7 @@ if(bugForm){
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify(payload)
       });
-      if(!response.ok)throw new Error('HTTP '+response.status);
+      if(!response.ok){const errorText=await response.text().catch(()=> '');throw new Error('HTTP '+response.status+(errorText?' — '+errorText.slice(0,180):''));}
       bugStatus.textContent='Баг-репорт отправлен!';
       bugStatus.className='bug-status success';
       bugForm.reset();
@@ -65,7 +65,7 @@ if(bugForm){
       }
     }catch(err){
       console.error(err);
-      bugStatus.textContent='Не удалось отправить. Попробуйте ещё раз.';
+      bugStatus.textContent='Ошибка: '+(err.message||'неизвестная ошибка');
       bugStatus.className='bug-status error';
     }finally{
       bugSubmit.disabled=false;
