@@ -1,5 +1,6 @@
-import { db } from "../firebase.js";
-import { addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import { auth, db } from "../firebase.js";
+import { addDoc, collection, serverTimestamp, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
 const card=document.getElementById('torchCard');
 if(card){card.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect();card.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');card.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%')})}
@@ -134,7 +135,8 @@ if(bugForm){
         android:payload.android,
         description:payload.description,
         steps:payload.steps,
-        createdAt:serverTimestamp()
+        createdAt:serverTimestamp(),
+        userId:auth.currentUser.uid
       });
       bugStatus.textContent='Баг-репорт отправлен!';
       bugStatus.className='bug-status success';
@@ -149,6 +151,74 @@ if(bugForm){
       bugStatus.className='bug-status error';
     }finally{
       bugSubmit.disabled=false;
+    }
+  });
+}
+
+
+const publicAuthForm=document.getElementById('publicAuthForm');
+if(publicAuthForm){
+  const publicEmail=document.getElementById('publicEmail');
+  const publicPassword=document.getElementById('publicPassword');
+  const publicAuthStatus=document.getElementById('publicAuthStatus');
+  const publicLogin=document.getElementById('publicLogin');
+  const publicRegister=document.getElementById('publicRegister');
+  const publicLogout=document.getElementById('publicLogout');
+  const myBugsBox=document.getElementById('myBugsBox');
+  const myBugsList=document.getElementById('myBugsList');
+  let stopMyBugs=null;
+
+  const statusText={not_reviewed:'Не рассмотрено',reviewed:'Рассмотрено',rejected:'Отклонено',accepted:'Принято'};
+
+  function renderMyBugs(snapshot){
+    const docs=snapshot.docs.slice().sort((a,b)=>{
+      const ta=a.data().createdAt?.toMillis?.()||0, tb=b.data().createdAt?.toMillis?.()||0;
+      return tb-ta;
+    });
+    if(!docs.length){myBugsList.innerHTML='<p>Вы ещё не отправляли баг-репорты.</p>';return;}
+    myBugsList.innerHTML='';
+    docs.forEach(doc=>{
+      const bug=doc.data();
+      const article=document.createElement('article');
+      article.className='bug-card';
+      article.innerHTML='<div class="bug-card-top"><strong>🐛 Баг-репорт</strong><b>'+escapeHtml(statusText[bug.status]||'Не рассмотрено')+'</b></div>'+\
+        '<p><b>📱 Устройство:</b> '+escapeHtml(bug.device||'Не указано')+'</p>'+\
+        '<p><b>🤖 Android:</b> '+escapeHtml(bug.android||'Не указано')+'</p>'+\
+        '<p><b>🐛 Описание:</b><br>'+escapeHtml(bug.description||'Не указано').replace(/\\n/g,'<br>')+'</p>';
+      myBugsList.appendChild(article);
+    });
+  }
+
+  function watchMyBugs(user){
+    if(stopMyBugs)stopMyBugs();
+    stopMyBugs=onSnapshot(query(collection(db,'bugs'),where('userId','==',user.uid)),renderMyBugs,error=>{
+      console.error(error); myBugsList.innerHTML='<p class="error">Не удалось загрузить статусы: '+escapeHtml(error.message||'ошибка Firestore')+'</p>';
+    });
+  }
+
+  publicLogin.onclick=async()=>{
+    publicAuthStatus.textContent='Вход...';
+    try{await signInWithEmailAndPassword(auth,publicEmail.value.trim(),publicPassword.value);publicAuthStatus.textContent='';}
+    catch(err){publicAuthStatus.textContent='Ошибка входа: '+(err.message||'проверьте почту и пароль');}
+  };
+  publicRegister.onclick=async()=>{
+    publicAuthStatus.textContent='Создание аккаунта...';
+    try{await createUserWithEmailAndPassword(auth,publicEmail.value.trim(),publicPassword.value);publicAuthStatus.textContent='Аккаунт создан!';}
+    catch(err){publicAuthStatus.textContent='Ошибка регистрации: '+(err.message||'не удалось создать аккаунт');}
+  };
+  publicLogout.onclick=()=>signOut(auth);
+
+  onAuthStateChanged(auth,user=>{
+    if(user){
+      publicLogin.hidden=true; publicRegister.hidden=true; publicLogout.hidden=false;
+      publicEmail.disabled=true; publicPassword.disabled=true;
+      publicAuthStatus.textContent='Вы вошли как '+(user.email||'пользователь');
+      myBugsBox.hidden=false; watchMyBugs(user);
+    }else{
+      publicLogin.hidden=false; publicRegister.hidden=false; publicLogout.hidden=true;
+      publicEmail.disabled=false; publicPassword.disabled=false;
+      myBugsBox.hidden=true; publicAuthStatus.textContent='';
+      if(stopMyBugs)stopMyBugs();
     }
   });
 }
