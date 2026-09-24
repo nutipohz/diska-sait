@@ -8,7 +8,7 @@ import {
   collection,
   onSnapshot,
   updateDoc,
-  doc
+  doc as firestoreDoc
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 const loginBox = document.getElementById("loginBox");
@@ -83,7 +83,7 @@ function loadBugs() {
           "</select></label>";
         const select=article.querySelector('.bug-status-select');
         select.value=bug.status||'not_reviewed';
-        select.addEventListener('change',async()=>{try{await updateDoc(doc(db,'bugs',bugDoc.id),{status:select.value});}catch(error){console.error(error);alert('Не удалось изменить статус: '+(error.message||'ошибка Firestore'));select.value=bug.status||'not_reviewed';}});
+        select.addEventListener('change',async()=>{try{await updateDoc(firestoreDoc(db,'bugs',bugDoc.id),{status:select.value});}catch(error){console.error(error);alert('Не удалось изменить статус: '+(error.message||'ошибка Firestore'));select.value=bug.status||'not_reviewed';}});
         bugsList.appendChild(article);
       });
     },
