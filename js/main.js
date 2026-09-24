@@ -168,6 +168,8 @@ function escapeHtml(value){
 }
 
 
+const ADMIN_UID='uCk9dm2IGRULahkfcc9JpCX0Hwq1';
+
 const publicAuthForm=document.getElementById('publicAuthForm');
 if(publicAuthForm){
   const publicEmail=document.getElementById('publicEmail');
@@ -224,8 +226,14 @@ if(publicAuthForm){
   };
   publicLogout.onclick=(e)=>{ e.preventDefault(); signOut(auth); };
 
-  onAuthStateChanged(auth,user=>{
+  onAuthStateChanged(auth,async user=>{
     if(user){
+      if(user.uid===ADMIN_UID){
+        await signOut(auth);
+        publicAuthStatus.textContent='Этот аккаунт предназначен только для админки.';
+        myBugsBox.hidden=true;
+        return;
+      }
       publicLogin.hidden=true; publicRegister.hidden=true; publicLogout.hidden=false;
       publicEmail.disabled=true; publicPassword.disabled=true;
       publicAuthStatus.textContent='Вы вошли как '+(user.email||'пользователь');
