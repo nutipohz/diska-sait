@@ -19,12 +19,18 @@ const password = document.getElementById("password");
 const loginStatus = document.getElementById("loginStatus");
 const bugsList = document.getElementById("bugsList");
 const logoutBtn = document.getElementById("logoutBtn");
+const ADMIN_UID = "uCk9dm2IGRULahkfcc9JpCX0Hwq1";
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   loginStatus.textContent = "Вход...";
   try {
-    await signInWithEmailAndPassword(auth, email.value.trim(), password.value);
+    const userCredential = await signInWithEmailAndPassword(auth, email.value.trim(), password.value);
+    if (userCredential.user.uid !== ADMIN_UID) {
+      await signOut(auth);
+      loginStatus.textContent = "Этот аккаунт не имеет доступа к админке.";
+      return;
+    }
     loginStatus.textContent = "";
   } catch (error) {
     console.error(error);
@@ -97,8 +103,15 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
+    if (user.uid !== ADMIN_UID) {
+      await signOut(auth);
+      loginBox.hidden = false;
+      bugsBox.hidden = true;
+      loginStatus.textContent = "Этот аккаунт не имеет доступа к админке.";
+      return;
+    }
     loginBox.hidden = true;
     bugsBox.hidden = false;
     loadBugs();
