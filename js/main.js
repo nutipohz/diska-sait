@@ -122,6 +122,13 @@ if(bugForm){
     bugStatus.className='bug-status';
     bugSubmit.disabled=true;
 
+    if(!auth.currentUser){
+      bugStatus.textContent='Сначала войдите или создайте аккаунт ниже.';
+      bugStatus.className='bug-status error';
+      bugSubmit.disabled=false;
+      return;
+    }
+
     const payload={
       device:bugDevice.value.trim(),
       android:bugAndroid.value.trim(),
@@ -153,6 +160,11 @@ if(bugForm){
       bugSubmit.disabled=false;
     }
   });
+}
+
+
+function escapeHtml(value){
+  return String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
 }
 
 
