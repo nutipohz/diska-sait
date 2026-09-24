@@ -193,9 +193,9 @@ if(publicAuthForm){
       const bug=doc.data();
       const article=document.createElement('article');
       article.className='bug-card';
-      article.innerHTML='<div class="bug-card-top"><strong>🐛 Баг-репорт</strong><b>'+escapeHtml(statusText[bug.status]||'Не рассмотрено')+'</b></div>'+\
-        '<p><b>📱 Устройство:</b> '+escapeHtml(bug.device||'Не указано')+'</p>'+\
-        '<p><b>🤖 Android:</b> '+escapeHtml(bug.android||'Не указано')+'</p>'+\
+      article.innerHTML='<div class="bug-card-top"><strong>🐛 Баг-репорт</strong><b>'+escapeHtml(statusText[bug.status]||'Не рассмотрено')+'</b></div>'+
+        '<p><b>📱 Устройство:</b> '+escapeHtml(bug.device||'Не указано')+'</p>'+
+        '<p><b>🤖 Android:</b> '+escapeHtml(bug.android||'Не указано')+'</p>'+
         '<p><b>🐛 Описание:</b><br>'+escapeHtml(bug.description||'Не указано').replace(/\\n/g,'<br>')+'</p>';
       myBugsList.appendChild(article);
     });
