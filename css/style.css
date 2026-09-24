@@ -26,7 +26,7 @@ nav{display:flex;gap:2px;overflow:auto;scrollbar-width:none}nav::-webkit-scrollb
 .kicker{display:inline-flex;border:1px solid #553027;background:#170e0c;color:#ff9a78;padding:7px 10px;border-radius:6px;font-size:.66rem;font-weight:700}
 h1{font-size:clamp(3.4rem,8vw,7.5rem);line-height:.84;letter-spacing:-.09em;margin:22px 0 28px;max-width:850px}h1 em{font-style:normal;color:var(--accent)}
 .lede{max-width:600px;color:#aeb7bf;font-size:1.02rem}.cta-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:30px}
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border-radius:10px;border:1px solid #29343c;font:800 .82rem Inter;text-decoration:none;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-2px)}
+[hidden]{display:none!important}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border-radius:10px;border:1px solid #29343c;font:800 .82rem Inter;text-decoration:none;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-2px)}
 .btn-primary{background:var(--accent);color:#180906;border-color:var(--accent);box-shadow:0 12px 30px rgba(255,91,53,.2)}.btn-primary:hover{box-shadow:0 16px 40px rgba(255,91,53,.35)}
 .btn-ghost{background:#0d1216;color:#e9edf0}.fine{font-size:.73rem;color:#6f7a84}
 
