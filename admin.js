@@ -6,7 +6,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 import {
   collection,
-  onSnapshot
+  onSnapshot,
+  updateDoc,
+  doc
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 const loginBox = document.getElementById("loginBox");
@@ -68,7 +70,14 @@ function loadBugs() {
           "<p><b>📱 Устройство:</b> " + escapeHtml(bug.device || "Не указано") + "</p>" +
           "<p><b>🤖 Android:</b> " + escapeHtml(bug.android || "Не указано") + "</p>" +
           "<p><b>🐛 Описание:</b><br>" + escapeHtml(bug.description || "Не указано").replace(/\n/g, "<br>") + "</p>" +
-          "<p><b>🔁 Как повторить:</b><br>" + escapeHtml(bug.steps || "Не указано").replace(/\n/g, "<br>") + "</p>";
+          "<p><b>🔁 Как повторить:</b><br>" + escapeHtml(bug.steps || "Не указано").replace(/\n/g, "<br>") + "</p>" +
+          "<p><b>📌 Статус:</b> <span class='bug-status-label'>" + escapeHtml({not_reviewed:'Не рассмотрено',reviewed:'Рассмотрено',rejected:'Отклонено',accepted:'Принято'}[bug.status] || 'Не рассмотрено') + "</span></p>" +
+          "<label>Изменить статус<select class='bug-status-select'>" +
+          "<option value='not_reviewed'>Не рассмотрено</option><option value='reviewed'>Рассмотрено</option><option value='rejected'>Отклонено</option><option value='accepted'>Принято</option>" +
+          "</select></label>";
+        const select=article.querySelector('.bug-status-select');
+        select.value=bug.status||'not_reviewed';
+        select.addEventListener('change',async()=>{try{await updateDoc(doc(db,'bugs',doc.id),{status:select.value});}catch(error){console.error(error);alert('Не удалось изменить статус: '+(error.message||'ошибка Firestore'));select.value=bug.status||'not_reviewed';}});
         bugsList.appendChild(article);
       });
     },
