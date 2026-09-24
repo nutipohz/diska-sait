@@ -19,11 +19,34 @@
 <link rel="icon" type="image/png" href="favicon-main.png">
 <link rel="shortcut icon" type="image/png" href="favicon-main.png">
 <link rel="apple-touch-icon" href="favicon-main.png">
-<link rel="stylesheet" href="css/style.css?v=2.0.1">
+<link rel="stylesheet" href="css/style.css?v=2.0.2">
 </head>
 <body>
 <div class="grain"></div>
 <main id="site"></main>
+<section class="section" id="bug-account">
+  <div class="section-head">
+    <div class="eyebrow">ACCOUNT</div>
+    <h2>Мои баг-репорты</h2>
+    <p>Войдите или создайте аккаунт, чтобы отправлять баги и видеть их статус.</p>
+  </div>
+  <div class="bug-account-box">
+    <form id="publicAuthForm" class="bug-form">
+      <label class="bug-field"><span>📧 Почта</span><input id="publicEmail" type="email" autocomplete="email" required></label>
+      <label class="bug-field"><span>🔑 Пароль</span><input id="publicPassword" type="password" minlength="6" autocomplete="current-password" required></label>
+      <div class="bug-actions">
+        <button class="btn btn-primary" type="submit" id="publicLogin">Войти</button>
+        <button class="btn" type="button" id="publicRegister">Создать аккаунт</button>
+        <button class="btn" type="button" id="publicLogout" hidden>Выйти</button>
+        <span class="bug-status" id="publicAuthStatus" aria-live="polite"></span>
+      </div>
+    </form>
+    <div id="myBugsBox" hidden>
+      <h3>Статусы моих баг-репортов</h3>
+      <div id="myBugsList"></div>
+    </div>
+  </div>
+</section>
 <section class="section" id="bug-report">
   <div class="section-head">
     <div class="eyebrow">BUG REPORT</div>
@@ -76,7 +99,7 @@
 <script>
 const sections=['header','hero','news','next','antagonist','features','difficulty','ranks','controls','requirements','gallery','credits','status','footer','lightbox'];
 const site=document.getElementById('site');
-const version='2.0.1';
+const version='2.0.2';
 Promise.all(sections.map(name=>fetch('sections/'+name+'.html?v='+version,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(name);return r.text()})))
 .then(parts=>{site.innerHTML=parts.join('\n');const footer=site.querySelector('#footer, footer');const bugReport=document.getElementById('bug-report');if(footer&&bugReport)bugReport.after(footer);const s=document.createElement('script');s.type='module';s.src='js/main.js?v='+version;document.body.appendChild(s)})
 .catch(err=>{console.error(err);site.innerHTML='<section class="section"><div class="status-box"><strong>Не удалось загрузить страницу.</strong><br><span style="color:var(--muted)">Попробуйте обновить страницу.</span></div></section>'});
