@@ -1,3 +1,6 @@
+import { db } from "../firebase.js";
+import { addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
 const card=document.getElementById('torchCard');
 if(card){card.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect();card.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');card.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%')})}
 
@@ -126,12 +129,13 @@ if(bugForm){
     };
 
     try{
-      const response=await fetch('https://lingering-hall-fe0d.p08071774.workers.dev',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify(payload)
+      await addDoc(collection(db,'bugs'),{
+        device:payload.device,
+        android:payload.android,
+        description:payload.description,
+        steps:payload.steps,
+        createdAt:serverTimestamp()
       });
-      if(!response.ok){const errorText=await response.text().catch(()=> '');throw new Error('HTTP '+response.status+(errorText?' — '+errorText.slice(0,180):''));}
       bugStatus.textContent='Баг-репорт отправлен!';
       bugStatus.className='bug-status success';
       bugForm.reset();
