@@ -208,17 +208,21 @@ if(publicAuthForm){
     });
   }
 
-  publicLogin.onclick=async()=>{
+  publicLogin.onclick=async(e)=>{ e.preventDefault();
     publicAuthStatus.textContent='Вход...';
+    publicLogin.disabled=true;
     try{await signInWithEmailAndPassword(auth,publicEmail.value.trim(),publicPassword.value);publicAuthStatus.textContent='';}
     catch(err){publicAuthStatus.textContent='Ошибка входа: '+(err.message||'проверьте почту и пароль');}
+    finally{publicLogin.disabled=false;}
   };
-  publicRegister.onclick=async()=>{
+  publicRegister.onclick=async(e)=>{ e.preventDefault();
     publicAuthStatus.textContent='Создание аккаунта...';
+    publicRegister.disabled=true;
     try{await createUserWithEmailAndPassword(auth,publicEmail.value.trim(),publicPassword.value);publicAuthStatus.textContent='Аккаунт создан!';}
     catch(err){publicAuthStatus.textContent='Ошибка регистрации: '+(err.message||'не удалось создать аккаунт');}
+    finally{publicRegister.disabled=false;}
   };
-  publicLogout.onclick=()=>signOut(auth);
+  publicLogout.onclick=(e)=>{ e.preventDefault(); signOut(auth); };
 
   onAuthStateChanged(auth,user=>{
     if(user){
