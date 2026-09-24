@@ -78,7 +78,7 @@ const sections=['header','hero','news','next','antagonist','features','difficult
 const site=document.getElementById('site');
 const version='2.0.0';
 Promise.all(sections.map(name=>fetch('sections/'+name+'.html?v='+version,{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(name);return r.text()})))
-.then(parts=>{site.innerHTML=parts.join('\n');const footer=site.querySelector('#footer, footer');const bugReport=document.getElementById('bug-report');if(footer&&bugReport)bugReport.after(footer);const s=document.createElement('script');s.src='js/main.js?v='+version;document.body.appendChild(s)})
+.then(parts=>{site.innerHTML=parts.join('\n');const footer=site.querySelector('#footer, footer');const bugReport=document.getElementById('bug-report');if(footer&&bugReport)bugReport.after(footer);const s=document.createElement('script');s.type='module';s.src='js/main.js?v='+version;document.body.appendChild(s)})
 .catch(err=>{console.error(err);site.innerHTML='<section class="section"><div class="status-box"><strong>Не удалось загрузить страницу.</strong><br><span style="color:var(--muted)">Попробуйте обновить страницу.</span></div></section>'});
 </script>
 </body>
