@@ -67,8 +67,8 @@ function loadBugs() {
       }
 
       bugsList.innerHTML = "";
-      docs.forEach((doc) => {
-        const bug = doc.data();
+      docs.forEach((bugDoc) => {
+        const bug = bugDoc.data();
         const article = document.createElement("article");
         article.className = "bug-card";
         article.innerHTML =
@@ -83,7 +83,7 @@ function loadBugs() {
           "</select></label>";
         const select=article.querySelector('.bug-status-select');
         select.value=bug.status||'not_reviewed';
-        select.addEventListener('change',async()=>{try{await updateDoc(doc(db,'bugs',doc.id),{status:select.value});}catch(error){console.error(error);alert('Не удалось изменить статус: '+(error.message||'ошибка Firestore'));select.value=bug.status||'not_reviewed';}});
+        select.addEventListener('change',async()=>{try{await updateDoc(doc(db,'bugs',bugDoc.id),{status:select.value});}catch(error){console.error(error);alert('Не удалось изменить статус: '+(error.message||'ошибка Firestore'));select.value=bug.status||'not_reviewed';}});
         bugsList.appendChild(article);
       });
     },
